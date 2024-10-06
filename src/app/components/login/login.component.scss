@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+    width: 40%;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.container form {
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #cccccc;
+}
+
+.btn-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-container button {
+    width: 100px;
+}
+
+.btn-container #noaccount {
+    padding-top: 20px;
+    font-size: 12px;
+}
