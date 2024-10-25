@@ -1,27 +1,48 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ApiService } from './services/api.service';
-import { HttpClientModule } from '@angular/common/http';
-import { FormComponent } from './components/form/form.component';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ProductsComponent } from './components/products/products.component';
+import { UserProductListComponent } from './components/user-product-list/user-product-list.component';
+import { LoginService } from './services/login.service';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { logOut } from './store/login.actions';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    HttpClientModule,
-    FormComponent
-  ],
-  providers: [ApiService],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+	selector: 'app-root',
+	standalone: true,
+	imports: [
+		RouterOutlet,
+		ProductsComponent,
+		UserProductListComponent,
+		RouterLink,
+		RouterLinkActive,
+		AsyncPipe
+	],
+	providers: [],
+	templateUrl: './app.component.html',
+	styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'angular-project';
+	title = 'angular-project';
 
-    constructor() {
-    }
+	signedIn$: Observable<boolean>;
 
-    ngOnInit() {
-    }
+	constructor(
+		private router: Router,
+		private loginService: LoginService,
+    	private store: Store<{ login: boolean }>
+	) {
+		this.signedIn$ = store.select('login')
+	}
+
+	logout() {
+	   this.loginService.logout().subscribe({
+	        next: () => { 
+				this.store.dispatch(logOut())
+				this.router.navigate(['/']);
+			}
+	   });
+	}
+
 }

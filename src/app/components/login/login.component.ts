@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Credentials } from '../../models/user';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { LoginService } from '../../services/login.service';
-import { catchError } from 'rxjs';
+import { Store } from '@ngrx/store'
+import { logIn } from '../../store/login.actions'
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, AsyncPipe],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -16,8 +18,10 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
-    private loginService: LoginService
-  ) {}
+    private loginService: LoginService,
+    private store: Store<{ login: boolean}>
+  ) {
+  }
 
   credentials = new Credentials('', '');
   button = 'Log In';
@@ -35,24 +39,9 @@ export class LoginComponent {
     .subscribe({
       next: (data) => {
         this.redirectToHome();
+	      this.store.dispatch(logIn())
       },
       error: (error) => console.log(error)
     });
-  }
-
-  testSecured() {
-    this.loginService.secured()
-      .subscribe({
-        next: (data) => console.log(data),
-        error: (error) => console.log(error)
-      })
-  }
-
-  logout() {
-    this.loginService.logout()
-      .subscribe({
-        next: (data) => console.log('logged out', data),
-        error: (error) => console.log(error)
-      })
   }
 }

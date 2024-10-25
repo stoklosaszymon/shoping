@@ -1,0 +1,10 @@
+<div class="list">
+    <app-select-categories></app-select-categories>
+</div>
+<div class="list">
+    @for (product of products; track product.id) {
+    <div (click)="handleClick(product)" class="listItem">
+        <span>{{ product.name }}</span>
+    </div>
+    }
+</div>

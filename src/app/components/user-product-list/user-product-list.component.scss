@@ -1,0 +1,31 @@
+.notebook {
+  border: 1px solid #eeeeee;
+  box-shadow: 1px 1px 0 #dddddd;
+  display: block;
+  font-size: 22px;
+  line-height: 50px;
+  margin: 0% auto;
+  padding: 0px 20px 0 70px;
+  resize: none;
+  min-height: 90vh;
+  max-height: 90vh;
+  overflow-y: scroll;
+  font-family: "Waiting for the Sunrise", cursive;
+  font-size: 30px;
+  letter-spacing: 6px;
+  font-weight: bold;
+  background-image:
+    -moz-linear-gradient(top, transparent, transparent 49px, #e7eff8 0px),
+    -moz-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 39%, transparent
+          0%),
+    -moz-radial-gradient(3.9% 46%, circle closest-corner, #cccccc, #cccccc 43.5%, transparent
+          0%);
+  background-image:
+    -webkit-linear-gradient(top, transparent, transparent 49px, #e7eff8 0),
+    -webkit-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 39%, transparent
+          0%),
+    -webkit-radial-gradient(3.9% 46%, circle closest-corner, #cccccc, #cccccc
+          43.5%, transparent 0%);
+  -webkit-background-size: 100% 50px;
+  background-size: 100% 50px;
+}
