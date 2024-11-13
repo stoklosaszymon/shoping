@@ -11,6 +11,7 @@ import { ICategory } from "../../models/product";
     ],
     providers: [],
     template: `
+        <div>
             <select class="form-select" [(ngModel)]="selectedCategoryId" (change)="onChange()">
                 @for (category of categories; track category.id) {
                     <option [value]="category.id">
@@ -18,7 +19,8 @@ import { ICategory } from "../../models/product";
                     </option>
                 }
             </select>
-        `,
+        </div>
+    `,
     styles: []
 })
 

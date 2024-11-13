@@ -1,10 +1,40 @@
-<div class="list">
-    <app-select-categories></app-select-categories>
-</div>
-<div class="list">
-    @for (product of products; track product.id) {
-    <div (click)="handleClick(product)" class="listItem">
-        <span>{{ product.name }}</span>
+<div class="main">
+    <div class="element">
+        @for (product of products; track product.id) {
+        <div (click)="handleClick(product)" (contextmenu)="onRightClick($event); setId(product.id)" class="listItem">
+            <span>{{ product.name }}</span>
+        </div>
+        }
     </div>
+
+    @if (products.length == 0 && loaded) {
+        <div class="listItem new" (click)="addProduct()">
+           <mat-icon>add</mat-icon> <span>{{ keyword }}</span>
+        </div>
     }
+
+    <div class="keyword-container">
+        <span #keywordRef class="keyword">
+            {{keyword}}
+        </span>
+    </div>
+
+
+    <div style="visibility: hidden; position: fixed;" [style.left]="menuTopLeftPosition.x"
+    [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="rightMenu"></div>
+
+<!-- standard material menu -->
+    <mat-menu #rightMenu="matMenu">
+        <ng-template matMenuContent let-item="item" >
+            <button mat-menu-item (click)="handleDelete()">Remove</button>
+        </ng-template>
+    </mat-menu>
+
+    <div class="search">
+        <mat-icon (click)="showSearch()">search</mat-icon>
+        <input [ngModel]="keyword" id="searchInput" />
+        @if (keyword != '') {
+            <mat-icon (click)="clearSearch()">close</mat-icon>
+        }
+    </div>
 </div>

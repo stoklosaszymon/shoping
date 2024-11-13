@@ -32,4 +32,8 @@ export class LoginService {
     secured() {
         return this.apiService.get<any[]>('users');
     }
+
+    auth() {
+        return this.apiService.get<any[]>('auth')
+    }
 }

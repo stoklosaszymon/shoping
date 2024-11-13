@@ -2,16 +2,14 @@
   border: 1px solid #eeeeee;
   box-shadow: 1px 1px 0 #dddddd;
   display: block;
-  font-size: 22px;
-  line-height: 50px;
+  line-height: 49px;
   margin: 0% auto;
-  padding: 0px 20px 0 70px;
+  padding: 10px 20px 0 70px;
   resize: none;
-  min-height: 90vh;
-  max-height: 90vh;
-  overflow-y: scroll;
+  height: fit-content;
+  min-height: 100%;
   font-family: "Waiting for the Sunrise", cursive;
-  font-size: 30px;
+  font-size: 32px;
   letter-spacing: 6px;
   font-weight: bold;
   background-image:
@@ -22,10 +20,63 @@
           0%);
   background-image:
     -webkit-linear-gradient(top, transparent, transparent 49px, #e7eff8 0),
-    -webkit-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 39%, transparent
+    -webkit-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 35%, transparent
           0%),
     -webkit-radial-gradient(3.9% 46%, circle closest-corner, #cccccc, #cccccc
-          43.5%, transparent 0%);
+          39.5%, transparent 0%);
   -webkit-background-size: 100% 50px;
   background-size: 100% 50px;
+}
+
+.show {
+  display: flex !important;
+}
+
+.menu {
+  display: none;
+  gap: 20px;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+svg {
+  width: 20px;
+}
+
+.row-item { 
+  display:flex;
+  justify-content: start;
+  flex-direction:row;
+  align-items: center;
+  width:100%;
+  cursor: pointer;
+  gap: 15px;
+  margin: 0px 0px 0px 15px;
+}
+
+p {
+  margin-bottom: 0px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+/* Apply the shake animation to the text */
+.shake-text {
+  display: inline-block; /* Make sure it applies directly to inline text */
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  animation: shake 0.5s ease-in-out; /* Infinite loop for continuous shake */
+}
+
+@media only screen and (max-width: 600px) {
+  .notebook {
+    padding-left: 20px;
+  }
 }

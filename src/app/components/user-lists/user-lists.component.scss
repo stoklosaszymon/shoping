@@ -1,0 +1,62 @@
+.main {
+    display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;
+    margin: 20px 5px 20px 5px; width: 100%
+}
+.item { 
+    width: 240px; height: 120px; border-radius: 15px;
+    border: 1px solid black; display: flex; 
+    display: flex; flex-direction: column;
+    overflow-y: hidden;
+}
+.itemAdd {
+    width: 240px; height: 120px; border-radius: 15px;
+    border: 1px solid black; display: flex; 
+    justify-content: center; align-items: center;
+    cursor: pointer
+}
+
+.itemMenu {
+    text-align: right;
+    margin: 5px 5px 0 0;
+    height:20%;
+}
+.itemContent {
+    height: 50%;
+    margin-top: 20px;
+    cursor: pointer;
+}
+.itemFooter {
+    text-align: center;
+    height:20%;
+    margin-bottom: 5px;
+    bottom: -100px; 
+    left: 0;
+    text-align: center;
+    transition: transform 0.5s ease;
+    transform: translateY(110%);
+}
+.show {
+    transform: translateY(0);
+}
+mat-icon { 
+    cursor: pointer;
+}
+.note-card {
+  background-color: #fff8dc; 
+  border: 1px solid #e0e0e0; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  font-family: Arial, sans-serif; 
+  line-height: 1.5; 
+  margin: 20px auto; 
+}
+
+.settings-icon {
+    overflow: hidden;
+    transition-duration: 0.8s;
+    transition-property: transform;
+}
+.rotate {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+}

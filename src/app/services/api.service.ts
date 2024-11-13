@@ -10,7 +10,9 @@ export class ApiService {
 
   private baseUrl = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    //this.baseUrl = window.location.origin;
+  }
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({

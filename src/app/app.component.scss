@@ -1,0 +1,26 @@
+nav {
+    margin: unset;
+}
+
+  /* Optional: Add "lined" look */
+.bckg::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: repeating-linear-gradient(
+    white, 
+    white 24px, 
+    #f0f0f0 25px
+  );
+  opacity: 1; /* Light lines */
+  z-index: -1; /* Behind content */
+}
+
+.bckg {
+  height: 100%;
+}
+

@@ -7,6 +7,7 @@ import { provideStore } from '@ngrx/store';
 
 import { StoreModule } from '@ngrx/store';
 import { loginReducer } from './store/login.reducer';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,6 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideStore({
       login: loginReducer,
-    }),
+    }), provideAnimationsAsync(),
 ]
 };

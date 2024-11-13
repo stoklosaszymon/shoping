@@ -1,6 +1,7 @@
 export interface Product {
     id: number
     name: string
+    status: string
     product_category_id: number
 }
 
