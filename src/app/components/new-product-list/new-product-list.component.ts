@@ -38,7 +38,15 @@ import { Router } from '@angular/router';
         font-weight: bold;
      }
      .list { height: 100%; width: 100%; overflow-y: scroll}
-     .products { max-height: 48px; width: 100%; text-align: center; overflow-y: scroll }
+     .products { 
+            height: 48px;
+            resize: both;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            font-size: 25px;
+     }
    `]
 })
 export class NewProductListComponent {

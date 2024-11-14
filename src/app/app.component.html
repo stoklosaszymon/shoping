@@ -1,5 +1,6 @@
+@if ( signedIn ) {
 <nav class="navbar navbar-expand-sm navbar-light bg-light fs-4">
-  
+
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -15,19 +16,20 @@
       </li>
 
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
           Account
         </a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
           @if( signedIn ) {
-            <li class="nav-item">
-              <button class="dropdown-item" (click)="logout()">Logout</button>
-            </li>
+          <li class="nav-item">
+            <button class="dropdown-item" (click)="logout()">Logout</button>
+          </li>
           }
           @else {
-            <li class="nav-item">
-              <a class="dropdown-item" routerLink="/login" href="#">login</a>
-            </li>
+          <li class="nav-item">
+            <a class="dropdown-item" routerLink="/login" href="#">login</a>
+          </li>
           }
         </ul>
       </li>
@@ -35,6 +37,7 @@
     </ul>
   </div>
 </nav>
+}
 <div class="bckg">
   <router-outlet></router-outlet>
 </div>
