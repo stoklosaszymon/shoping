@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root' 
@@ -11,7 +12,7 @@ export class ApiService {
   private baseUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) {
-    //this.baseUrl = window.location.origin;
+    this.baseUrl = environment.API_URL;
   }
 
   private getHeaders(): HttpHeaders {

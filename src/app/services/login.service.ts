@@ -1,24 +1,22 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Credentials } from '../models/user';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
 })
 export class LoginService {
 
-    constructor(private apiService: ApiService) { }
+    constructor(private apiService: ApiService,
+                private router: Router) { }
 
     register(credentials: Credentials) {
         this.apiService.post<any[]>('users', credentials)
-            .subscribe(
-                (data) => {
-                    console.log(data);
-                },
-                (error) => {
-                    console.error('Error registering user:', error);
-                }
-            );
+            .subscribe({
+                next: (data) => this.router.navigate(['/login']),
+                error: (error) => console.log(error)
+            });
     }
 
     login(credentials: Credentials) {
@@ -27,10 +25,6 @@ export class LoginService {
 
     logout() {
         return this.apiService.delete<any[]>('logout');
-    }
-
-    secured() {
-        return this.apiService.get<any[]>('users');
     }
 
     auth() {

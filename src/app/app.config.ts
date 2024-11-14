@@ -5,7 +5,6 @@ import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 
-import { StoreModule } from '@ngrx/store';
 import { loginReducer } from './store/login.reducer';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 

@@ -11,16 +11,10 @@ export class ProductService {
     constructor(private apiService: ApiService) { }
 
     private productSource = new Subject<Product>();  
-    private categorySource = new Subject<string>();  
     currentProduct = this.productSource.asObservable();
-    currentCategory = this.categorySource.asObservable();
   
     selectProduct(product: Product) {
       this.productSource.next(product); 
-    }
-
-    selectCategory(category: string) {
-      this.categorySource.next(category); 
     }
 
     getProducts(category: string = ''): Observable<Product[]> {
@@ -41,7 +35,7 @@ export class ProductService {
         return this.apiService.delete<any[]>(`products/${id}`)
     }
 
-    addProduct(name: string): Observable<any> {
+    createNewProduct(name: string): Observable<any> {
         return this.apiService.post<any[]>('products', { name: name });
     }
 
@@ -65,7 +59,7 @@ export class ProductService {
         return this.apiService.delete<any[]>(`lists/${listId}`);
     }
 
-    updateList(listId: string, newName: string) {
+    updateListName(listId: string, newName: string) {
         return this.apiService.post<any[]>(`lists/update/${listId}`, { new_name: newName })
     }
 

@@ -1,49 +1,48 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
-import { SelectCategoriesComponent } from '../select-categories/select-categories.component';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu'
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [SelectCategoriesComponent,
-            MatMenuModule,
+  imports: [MatMenuModule,
             MatIconModule,
             FormsModule],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss'
 })
-export class ProductsComponent {
+export class ProductsComponent implements OnChanges {
 
-  keyword: string = '';
+  @Input() keyword: string = '';
   products: Product[] = []
-  category = ''
   selected: number = 0;
   loaded = false;
   private keyHoldTimeout: any;
   private holdTime = 1000;
   @ViewChild('keywordRef') keywordRef: any;
+  isDesktop = false;
 
-  constructor(private productService: ProductService) { }
+  constructor(private productService: ProductService,
+              private deviceService: DeviceDetectorService) {
+      this.isDesktop = deviceService.isDesktop();
+  }
 
   @HostListener('window:keyup', ['$event'])
-  keyEvent(event: KeyboardEvent) {
-    this.keywordRef.nativeElement.classList.add("show");
-    setTimeout(() => {
-      this.keywordRef.nativeElement.classList.remove("show");
-    }, 1000);
-    if (event.code == `Key${event.key.toUpperCase()}` || event.code == 'Space') {
+  onKeyPressed(event: KeyboardEvent) {
+    this.showKeyword();
+    if (this.isLetterOrSpace(event) && this.deviceService.isDesktop()) {
       this.keyword += event.key;
-      this.products = this.products.filter(product => product.name.toLowerCase().startsWith(this.keyword.toLowerCase()));
+      this.products = this.filterProductsByKeyword();
     }
   }
 
   @HostListener('window:keydown.backspace', ['$event'])
-  handleBackspace() {
-    if (!this.keyHoldTimeout) {
+  OnBackspacePressed() {
+    if (!this.keyHoldTimeout && this.deviceService.isDesktop()) {
       this.keyword = this.keyword.slice(0, -1);
       if (this.keyword.length == 0) {
         this.getProduct();
@@ -56,19 +55,19 @@ export class ProductsComponent {
   }
 
   @HostListener('window:keyup.enter', ['$event'])
-  handleEnter() {
+  onEnterPressed() {
     if (this.products.length === 1) {
       this.productService.selectProduct(this.products[0]);
       this.clearKeyword();
     }
 
     if (this.products.length === 0) {
-      this.addProduct();
+      this.createNewProduct();
     }
   }
 
   @HostListener('window:keyup.backspace', ['$event'])
-  handleBackspaceUp() {
+  onBackspaceUp() {
     if (this.keyHoldTimeout) {
       clearTimeout(this.keyHoldTimeout);
       this.keyHoldTimeout = null;
@@ -76,15 +75,23 @@ export class ProductsComponent {
   }
 
   ngOnInit() {
-    this.productService.currentCategory.subscribe(category => {
-      this.category = category;
-      this.getProduct(this.category);
-    })
     this.getProduct();
   }
 
-  handleClick(product: Product) {
-    this.productService.selectProduct(product)
+  ngOnChanges(changes: SimpleChanges): void {
+    let currentKeyword = changes['keyword'].currentValue;
+    if (currentKeyword) {
+      this.products = this.filterProductsByKeyword();
+    }
+
+    if (this.keyword == '') {
+      this.clearKeyword();
+    }
+  }
+
+  selectProduct(product: Product) {
+    this.productService.selectProduct(product);
+    this.clearKeyword();
   }
 
   getProduct(category = '') {
@@ -101,8 +108,8 @@ export class ProductsComponent {
     this.getProduct();
   }
 
-  addProduct() {
-    this.productService.addProduct(this.keyword).subscribe({
+  createNewProduct() {
+    this.productService.createNewProduct(this.keyword).subscribe({
       next: (data) => {
         this.clearKeyword();
         this.productService.selectProduct(data);
@@ -135,14 +142,21 @@ export class ProductsComponent {
     })
   }
 
-  showSearch() {
-    let input = document.getElementById('searchInput') as HTMLElement;
-    input.classList.toggle('show');
-    input.focus();
+  showKeyword() {
+    if (this.isDesktop) {
+      this.keywordRef.nativeElement.classList.add("show");
+      setTimeout(() => {
+        this.keywordRef.nativeElement.classList.remove("show");
+      }, 1000);
+    }
   }
 
-  clearSearch() {
-    this.clearKeyword();
+  isLetterOrSpace(event: KeyboardEvent) {
+    return event.code == `Key${event.key.toUpperCase()}` || event.code == 'Space';
+  }
+
+  filterProductsByKeyword() {
+    return this.products.filter(product => product.name.toLowerCase().startsWith(this.keyword.toLowerCase()));
   }
 
 }

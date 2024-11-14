@@ -3,8 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { Credentials } from '../../models/user';
 import { Router } from '@angular/router';
 import { LoginService } from '../../services/login.service';
-import { Store } from '@ngrx/store'
-import { logIn } from '../../store/login.actions'
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -19,7 +17,6 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private loginService: LoginService,
-    private store: Store<{ login: boolean}>
   ) {
   }
 
@@ -27,24 +24,19 @@ export class LoginComponent {
   button = 'Log In';
 
   onSubmit() {
-    this.handleSubmit();
+    this.loginService.login(this.credentials as Credentials)
+      .subscribe({
+        next: (data) => {
+          this.redirectToHome();
+        },
+        error: (error) => console.log(error)
+      });
   }
 
   redirectToHome() {
     this.router.navigate(['/'])
-    .then(() => {
-      window.location.reload();
-    });
-  }
-
-  handleSubmit() {
-    this.loginService.login(this.credentials as Credentials)
-    .subscribe({
-      next: (data) => {
-        this.redirectToHome();
-	      this.store.dispatch(logIn())
-      },
-      error: (error) => console.log(error)
-    });
+      .then(() => {
+        window.location.reload();
+      });
   }
 }

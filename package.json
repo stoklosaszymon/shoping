@@ -22,6 +22,7 @@
     "@angular/router": "^18.2.7",
     "@ngrx/store": "^18.1.0",
     "bootstrap": "^5.3.3",
+    "ngx-device-detector": "^8.0.0",
     "prettier": "^3.3.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

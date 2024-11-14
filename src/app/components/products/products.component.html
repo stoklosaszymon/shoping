@@ -1,23 +1,26 @@
 <div class="main">
     <div class="element">
         @for (product of products; track product.id) {
-        <div (click)="handleClick(product)" (contextmenu)="onRightClick($event); setId(product.id)" class="listItem">
+        <div (click)="selectProduct(product)" (contextmenu)="onRightClick($event); setId(product.id)" class="listItem">
             <span>{{ product.name }}</span>
         </div>
         }
     </div>
 
     @if (products.length == 0 && loaded) {
-        <div class="listItem new" (click)="addProduct()">
+        <div class="listItem new" (click)="createNewProduct()">
            <mat-icon>add</mat-icon> <span>{{ keyword }}</span>
         </div>
     }
 
-    <div class="keyword-container">
-        <span #keywordRef class="keyword">
-            {{keyword}}
-        </span>
-    </div>
+
+    @if (isDesktop) {
+        <div class="keyword-container">
+            <span #keywordRef class="keyword">
+                {{keyword}}
+            </span>
+        </div>
+    }
 
 
     <div style="visibility: hidden; position: fixed;" [style.left]="menuTopLeftPosition.x"
@@ -30,11 +33,4 @@
         </ng-template>
     </mat-menu>
 
-    <div class="search">
-        <mat-icon (click)="showSearch()">search</mat-icon>
-        <input [ngModel]="keyword" id="searchInput" />
-        @if (keyword != '') {
-            <mat-icon (click)="clearSearch()">close</mat-icon>
-        }
-    </div>
 </div>

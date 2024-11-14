@@ -15,8 +15,8 @@ import { MatIconModule } from "@angular/material/icon";
                     <div class="itemMenu">
                         <mat-icon class="settings-icon" (click)="showMenu($index, $event)">settings</mat-icon>
                     </div>
-                    <div class="itemContent" (click)="redirectTo(list.id)">
-                        <p id="name-{{list.id}}" style="text-align: center" (keyup.enter)="test($event, list.id)"> {{list.name}} </p>
+                    <div class="itemContent" (click)="goToView(list.id)">
+                        <p id="name-{{list.id}}" style="text-align: center" (keyup.enter)="onNewNameInserted($event, list.id)"> {{list.name}} </p>
                     </div>
                     <div id="menu-{{$index}}" class="itemFooter">
                         <mat-icon (click)="deleteList(list.id)" style="color: red">delete_forever</mat-icon>
@@ -24,7 +24,7 @@ import { MatIconModule } from "@angular/material/icon";
                     </div>
                 </div>
             }
-            <div (click)="newListRedirect()" class="itemAdd new fs-4 note-card">
+            <div (click)="goToNewList()" class="itemAdd new fs-4 note-card">
                 <mat-icon>add</mat-icon>
             <div>
         </div>
@@ -49,11 +49,11 @@ export class UserListsComponent {
         })
     }
 
-    redirectTo(id: number | string) {
+    goToView(id: number | string) {
         this.router.navigate([`view-list/${id}`]);
     }
 
-    newListRedirect() {
+    goToNewList() {
         this.router.navigate([`new-list`]);
     }
 
@@ -71,12 +71,13 @@ export class UserListsComponent {
         })
     }
 
-    test(event: any, id: number) {
+    onNewNameInserted(event: any, id: number) {
         event.preventDefault();
+        event.target.innerText = event.target.innerText.trim();
         let newName = event.target.innerText;
         let target = event.target as HTMLElement;
         target.contentEditable = 'false';
-        this.updateList(id, newName);
+        this.updateListName(id, newName);
     }
 
     updateName(listId: number) {
@@ -86,8 +87,8 @@ export class UserListsComponent {
         list.focus();
     }
 
-    updateList(id: number, newName: string) {
-        this.productService.updateList(id.toString(), newName).subscribe({
+    updateListName(id: number, newName: string) {
+        this.productService.updateListName(id.toString(), newName).subscribe({
             next: () => console.log('list updated'),
             error: () => console.log('error'),
             complete: () => this.getLists()

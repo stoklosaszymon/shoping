@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnChanges, SimpleChanges } from '@angular/core';
 import { ProductsComponent } from '../products/products.component';
 import { UserProductListComponent } from '../user-product-list/user-product-list.component';
 import { ProductService } from '../../services/product.service';
@@ -12,26 +12,26 @@ import { Router } from '@angular/router';
     template: `
         <div class="main">
             <div class="products">
-                <app-products></app-products>
+                <app-products [keyword]="keyword"></app-products>
             </div>
             <div class="list">
-                <app-user-product-list></app-user-product-list>
+                <app-user-product-list [(userInput)]="keyword"></app-user-product-list>
             </div>
         </div>
-        <div class="corner">
-            <button (click)="addList()" [disabled]="empty()" class="btn btn-primary">Create</button>
+        <div class="button-container">
+            <button (click)="createNewList()" [disabled]="anySelected()" class="btn btn-primary">Create</button>
         </div>
   `,
     styles: [
         `
      .main { display: flex; flex-direction: column; height: 100% }
-     .corner {     
+     .button-container {     
         position: STICKY;
         bottom: 20px;
         display: flex;
         justify-content: center;
      }
-     .corner button {
+     .button-container button {
         width: 80px;
         height: 35px;
         font-size: 15px;
@@ -39,14 +39,12 @@ import { Router } from '@angular/router';
      }
      .list { height: 100%; width: 100%; overflow-y: scroll}
      .products { max-height: 48px; width: 100%; text-align: center; overflow-y: scroll }
-     @media only screen and (max-width: 600px) {
-
-     }
    `]
 })
 export class NewProductListComponent {
 
     selectedIds: number[] = [];
+    keyword: string = '';
 
     constructor(private productService: ProductService,
                 private router: Router) { }
@@ -59,7 +57,7 @@ export class NewProductListComponent {
         })
     }
 
-    addList() {
+    createNewList() {
         const newList = { list: { name: '', product_ids: [] } } as INewListRequest;
         newList.list.name = `Lista zakupów ${new Date().toLocaleDateString()}`;
         newList.list.product_ids = this.selectedIds;
@@ -74,7 +72,7 @@ export class NewProductListComponent {
             })
     }
 
-    empty() {
+    anySelected() {
         return this.selectedIds.length == 0;
     }
 }

@@ -4,6 +4,7 @@ import { ProductList } from "../../models/product";
 import { UserProductListComponent } from "../user-product-list/user-product-list.component";
 import { ProductService } from "../../services/product.service";
 import { ProductsComponent } from "../products/products.component";
+import { Subscription, of, switchMap } from "rxjs";
 
 
 @Component({
@@ -19,28 +20,18 @@ import { ProductsComponent } from "../products/products.component";
                 <app-products></app-products>
             </div>
             <app-user-product-list [list]="list" [id]="selectedId"></app-user-product-list>
-
-            @if (newProducts.length > 0) {
-                 <div class="corner">
-                     <button (click)="updateNewProducts()" class="btn btn-primary">Update</button>
-                 </div>
-            }
         </div>
         `,
     styles: [`
         .main { height: 100vh }
-        .products { height: 48px }
-        .corner {     
-           position: STICKY;
-           bottom: 20px;
-           display: flex;
-           justify-content: center;
-        }
-        .corner button {
-           width: 80px;
-           height: 35px;
-           font-size: 15px;
-           font-weight: bold;
+        .products { 
+            height: 48px;
+            resize: both;
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            font-size: 25px;
         }
     `]
 })
@@ -49,7 +40,7 @@ export class ViewListComponent {
 
     list: ProductList = {} as ProductList;
     selectedId: string = '0';
-    newProducts: number[] = [];
+    updateSubscription: Subscription = new Subscription();
 
     constructor(private route: ActivatedRoute,
         private router: Router,
@@ -60,30 +51,47 @@ export class ViewListComponent {
         this.selectedId = selectedId !== null ? selectedId : '';
         this.getList();
 
-        this.productService.currentProduct.subscribe((product) => {
-            if (!this.list.products.map(p => p.id).includes(product.id)) {
-                this.newProducts.push(product.id);
-            }
-        });
+        this.updateSubscription = this.productService.currentProduct.pipe(
+            switchMap(product => {
+                const ids = this.list.products.map( p => p.id )
+                if (product && !ids.includes(product.id)) {
+                    return this.productService.updateNewProducts(this.selectedId, [product.id])  
+                }
+                return of(null)
+            })
+        ).subscribe({
+            next: (data) => {
+                console.log('updated', data);
+            },
+            error: () => console.log('nie ma')
+        })
+        
     }
 
     getList() {
-        this.productService.getList(parseInt(this.selectedId))
+        return this.productService.getList(parseInt(this.selectedId))
             .subscribe({
-                next: (data) => { this.list = data },
+                next: (data) => { 
+                    this.list = data;
+                },
                 error: (error) => console.log(error)
             })
     }
 
-    updateNewProducts() {
-        let selectedId = this.route.snapshot.paramMap.get('id');
-        selectedId = selectedId !== null ? selectedId : '';
-        this.productService.updateNewProducts(
-            selectedId,
-            this.newProducts
-        ).subscribe({
-            next: (data) => console.log('updated', data),
-            error: () => console.log('error updating')
-        })
+    updateNewProducts(productId: number) {
+        let listId = this.route.snapshot.paramMap.get('id');
+        if (listId && productId) {
+            this.productService.updateNewProducts(
+                listId,
+                [productId]
+            ).subscribe({
+                next: (data) => { this.getList() },
+                error: () => console.log('error updating')
+            })
+        }
+    }
+
+    ngOnDestroy() {
+        this.updateSubscription.unsubscribe();
     }
 }

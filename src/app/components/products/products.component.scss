@@ -73,27 +73,7 @@
     display: none;
 }
 
-.search {
-    display: none;
-}
-
 .show {
     display: block;
 }
 
-#searchInput {
-    display: none;
-}
-
-@media only screen and (max-width: 600px) {
-  .search {
-    display: block;
-    position: fixed;
-    bottom: 85px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    z-index: 100;
-    transform: scale(2);
-  }
-}

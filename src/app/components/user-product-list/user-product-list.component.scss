@@ -9,7 +9,7 @@
   height: fit-content;
   min-height: 100%;
   font-family: "Waiting for the Sunrise", cursive;
-  font-size: 32px;
+  font-size: 24px;
   letter-spacing: 6px;
   font-weight: bold;
   background-image:
@@ -34,7 +34,7 @@
 
 .menu {
   display: none;
-  gap: 20px;
+  gap: 10px;
 }
 
 .strike {
@@ -73,6 +73,16 @@ p {
   font-weight: bold;
   color: #333;
   animation: shake 0.5s ease-in-out; /* Infinite loop for continuous shake */
+}
+
+.userInput {
+  height: 43px;
+  border: none;
+  margin-left: 35px;
+}
+
+.userInput:focus {
+  outline: none;
 }
 
 @media only screen and (max-width: 600px) {
