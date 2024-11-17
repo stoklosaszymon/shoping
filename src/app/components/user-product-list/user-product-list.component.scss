@@ -85,6 +85,10 @@ p {
   outline: none;
 }
 
+.keyboard-open {
+  transform: translateY(-100px); /* Example adjustment */
+}
+
 @media only screen and (max-width: 600px) {
   .notebook {
     padding-left: 20px;

@@ -66,4 +66,12 @@ export class ProductService {
     updateNewProducts(listId: string, product_ids: number[]) {
         return this.apiService.post<any[]>(`lists/update_products/${listId}`, { product_ids: product_ids })
     }
+
+    duplicateList(listId: number) {
+        return this.apiService.post<any[]>(`lists/duplicate`, { list_id: listId })
+    }
+
+    updateQuantity(listId: string, productId: number, value: number) {
+        return this.apiService.post<any[]>(`list_items/update_quantity/${listId}`, { product_id: productId, value: value })
+    }
 }

@@ -1,8 +1,8 @@
-import { Component, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, OnChanges, SimpleChanges, ViewChild, viewChild } from '@angular/core';
 import { ProductsComponent } from '../products/products.component';
 import { UserProductListComponent } from '../user-product-list/user-product-list.component';
 import { ProductService } from '../../services/product.service';
-import { INewListRequest } from '../../models/product';
+import { INewListRequest, IProductRequest, Product } from '../../models/product';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
                 <app-products [keyword]="keyword"></app-products>
             </div>
             <div class="list">
-                <app-user-product-list [(userInput)]="keyword"></app-user-product-list>
+                <app-user-product-list #list [(userInput)]="keyword"></app-user-product-list>
             </div>
         </div>
         <div class="button-container">
@@ -53,6 +53,7 @@ export class NewProductListComponent {
 
     selectedIds: number[] = [];
     keyword: string = '';
+    listComponent = viewChild<UserProductListComponent>("list");
 
     constructor(private productService: ProductService,
                 private router: Router) { }
@@ -66,9 +67,14 @@ export class NewProductListComponent {
     }
 
     createNewList() {
-        const newList = { list: { name: '', product_ids: [] } } as INewListRequest;
+        const newList = { list: { name: '', products: [] } } as INewListRequest;
         newList.list.name = `Lista zakupów ${new Date().toLocaleDateString()}`;
-        newList.list.product_ids = this.selectedIds;
+        const products = this.listComponent()?.products.map( p => ({
+            id: p.id,
+            quantity: p.quantity,
+            status: p.status
+        }))
+        newList.list.products = products as IProductRequest[];
 
         this.productService.addNewList(newList)
             .subscribe({

@@ -3,6 +3,8 @@ export interface Product {
     name: string
     status: string
     product_category_id: number
+    unit: string 
+    quantity: number
 }
 
 export interface ICategory extends Product {
@@ -19,9 +21,15 @@ export interface ProductList {
 
 export interface INewList {
     name: string
-    product_ids: number[]
+    products: IProductRequest[]
 }
 
 export interface INewListRequest {
     list: INewList
+}
+
+export interface IProductRequest {
+    id: number
+    quantity: number
+    status: string
 }

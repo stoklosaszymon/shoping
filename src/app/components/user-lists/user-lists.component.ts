@@ -3,10 +3,12 @@ import { ProductService } from "../../services/product.service";
 import { IList } from "../../models/product";
 import { Router } from "@angular/router";
 import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { concatMap, finalize } from "rxjs";
 
 @Component({
     selector: 'app-user-lists',
-    imports: [MatIconModule],
+    imports: [MatIconModule, MatTooltipModule],
     standalone: true,
     template: `
         <div class="main fs-4">
@@ -16,11 +18,12 @@ import { MatIconModule } from "@angular/material/icon";
                         <mat-icon class="settings-icon" (click)="showMenu($index, $event)">settings</mat-icon>
                     </div>
                     <div class="itemContent" (click)="goToView(list.id)">
-                        <p id="name-{{list.id}}" style="text-align: center" (keyup.enter)="onNewNameInserted($event, list.id)"> {{list.name}} </p>
+                        <p id="name-{{list.id}}" style="text-align: center" (focusout)="onLeaveEditMode($event)" (keyup.enter)="onNewNameInserted($event, list.id)"> {{list.name}} </p>
                     </div>
                     <div id="menu-{{$index}}" class="itemFooter">
-                        <mat-icon (click)="deleteList(list.id)" style="color: red">delete_forever</mat-icon>
-                        <mat-icon (click)="updateName(list.id)">edit</mat-icon>
+                        <mat-icon (click)="deleteList(list.id)" matTooltip="Delete" style="color: red">delete_forever</mat-icon>
+                        <mat-icon (click)="updateName(list.id)" matTooltip="Edit Name">edit</mat-icon>
+                        <mat-icon (click)="cloneList(list.id)" matTooltip="Clone" style="margin-top: 3px">content_copy</mat-icon>
                     </div>
                 </div>
             }
@@ -33,6 +36,7 @@ import { MatIconModule } from "@angular/material/icon";
 })
 export class UserListsComponent {
     userLists: IList[] = [];
+    lastEditedName: string = "";
 
     constructor(private productService: ProductService,
                 private router: Router) {}
@@ -44,7 +48,9 @@ export class UserListsComponent {
     getLists() {
         this.productService.getLists()
         .subscribe({
-            next: (data) => { this.userLists = data; },
+            next: (data) => { 
+                this.userLists = data;
+             },
             error: (error) => console.log(error)
         })
     }
@@ -83,8 +89,16 @@ export class UserListsComponent {
     updateName(listId: number) {
         let list = document.querySelector(`#name-${listId}`) as HTMLElement;
         list.contentEditable = 'true';
-        list.innerHTML = '';
+        this.lastEditedName = list.innerText;
+        list.innerText = '';
         list.focus();
+    }
+
+    onLeaveEditMode(event: Event) {
+        let target = event.target as HTMLElement;
+        if (target.innerText == '') {
+            target.innerText = this.lastEditedName;
+        }
     }
 
     updateListName(id: number, newName: string) {
@@ -94,4 +108,21 @@ export class UserListsComponent {
             complete: () => this.getLists()
         })
     }
+
+    cloneList(listId: number) {
+        this.productService.duplicateList(listId)
+        .pipe(
+            finalize(() => {
+                this.getLists();
+            })
+        )
+        .subscribe({
+            next: (data) => console.log('cloned', data),
+            error: () => console.log('error cloning')
+        })
+    }
 }
+function connectMap(): import("rxjs").OperatorFunction<any[], unknown> {
+    throw new Error("Function not implemented.");
+}
+

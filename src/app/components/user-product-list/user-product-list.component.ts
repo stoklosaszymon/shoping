@@ -16,11 +16,23 @@ import { FormsModule } from '@angular/forms';
         @for (product of products; track product.id) {
           <div class="row-item" >
             
-            <span (click)="onClickProduct($event)" [ngClass]="{'strike': product.status != 'to_buy'}">{{$index + 1}}.<span id="product-{{product.id}}">{{product.name}}</span></span>
+            <span (click)="onClickProduct($event)" [ngClass]="{'strike': product.status != 'to_buy'}">
+                    {{$index + 1}}.
+              <span id="product-{{product.id}}">
+                {{product.name}}
+              </span>
+              <span>
+                {{getProductUnitAndQuantity(product)}}
+              </span>
+            </span>
 
             <div class="menu">
+              <mat-icon (click)="incQuantity(product.id, product.quantity)">exposure_plus_1</mat-icon>
+              <mat-icon (click)="decQuantity(product.id, product.quantity)">exposure_neg_1</mat-icon>
+              @if ( isEditMode ) {
+                <mat-icon (click)="crossoutProduct(product.id)" style="color: green">check</mat-icon>
+              }
               <mat-icon (click)="removeProductFromList(product.id)" style="color: red">delete_forever</mat-icon>
-              <mat-icon (click)="crossoutProduct(product.id)" style="color: green">check</mat-icon>
             </div>
 
           </div>
@@ -38,6 +50,8 @@ export class UserProductListComponent implements OnChanges {
   @Input() id: string = '0';
   @Input() userInput: string = '';
   @Output() userInputChange = new EventEmitter<string>();
+  @Output() listChange = new EventEmitter<Product[]>();
+  @Input() isEditMode = false;
 
   isMobile = false;
   products: Product[] = [];
@@ -61,9 +75,25 @@ export class UserProductListComponent implements OnChanges {
         this.shakeItem(product.id);
       } else {
         product.status = 'to_buy';
+        product.quantity = 1;
         this.products.push(product);
         this.userInput = '';
       }
+    });
+  }
+
+  ngAfterViewInit() {
+    this.changeHeightOnKeyboardMobile();
+  }
+
+  changeHeightOnKeyboardMobile() {
+    document.querySelectorAll('input').forEach((input) => {
+      input.addEventListener('focus', () => {
+          document.body.classList.add('keyboard-open');
+      });
+      input.addEventListener('blur', () => {
+          document.body.classList.remove('keyboard-open');
+      });
     });
   }
 
@@ -97,7 +127,10 @@ export class UserProductListComponent implements OnChanges {
   removeAssociation(id: number) {
     this.productService.removeProductFromList(this.id, id.toString())
       .subscribe({
-        next: (data) => console.log(data),
+        next: (data) => {
+          console.log(data)
+          this.listChange.emit(this.products);
+        },
         error: (error) => console.log(error)
       })
   }
@@ -114,4 +147,39 @@ export class UserProductListComponent implements OnChanges {
     }
   }
 
+  getProductUnitAndQuantity(product: Product) {
+    if (product.unit == 'piece') {
+      return product.quantity + 'x';
+    } 
+    return product.quantity + product.unit;
+  }
+
+  incQuantity(productId: number, quantity: number) {
+    if (quantity > 0) {
+      this.isEditMode ? this.updateQuantityCall(productId, 1) : this.updateQuantityValue(productId, 1);
+    }
+  }
+
+  decQuantity(productId: number, quantity: number) {
+    if (quantity > 1) {
+      this.isEditMode ? this.updateQuantityCall(productId, -1) : this.updateQuantityValue(productId, -1);
+    }
+  }
+
+  updateQuantityCall(productId: number, value: number) {
+    this.productService.updateQuantity(this.id, productId, value)
+    .subscribe({
+      next: (data) => {
+        this.updateQuantityValue(productId, value);
+      },
+      error: () =>  console.log('error inc')
+    })
+  }
+
+  updateQuantityValue(productId: number, value: number) {
+    let product = this.products.find(p => p.id == productId);
+    if (product) {
+      product.quantity += value
+    }
+  }
 }

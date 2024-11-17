@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Credentials } from '../../models/user';
 import { Router } from '@angular/router';
@@ -20,6 +20,8 @@ export class LoginComponent {
   ) {
   }
 
+  @ViewChild('error') error: ElementRef | null = null;
+
   credentials = new Credentials('', '');
   button = 'Log In';
 
@@ -29,7 +31,10 @@ export class LoginComponent {
         next: (data) => {
           this.redirectToHome();
         },
-        error: (error) => console.log(error)
+        error: (error) => {
+          console.log(error)
+          this.error?.nativeElement.classList.add('show')
+        }
       });
   }
 

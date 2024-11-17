@@ -6,6 +6,9 @@
         <label for="Password">Password</label>
         <input class="form-control" type="password" id="password" name="password" required
             [(ngModel)]="credentials.password" #username="ngModel" />
+        <div #error class="error">
+            Wrong login or password!
+        </div>
         <div class="btn-container">
             <button class="btn btn-success" type="submit" [disabled]="!actorForm.form.valid">
                 {{ button }}

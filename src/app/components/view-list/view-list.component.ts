@@ -1,10 +1,10 @@
-import { Component } from "@angular/core";
+import { Component, effect, viewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ProductList } from "../../models/product";
+import { Product, ProductList } from "../../models/product";
 import { UserProductListComponent } from "../user-product-list/user-product-list.component";
 import { ProductService } from "../../services/product.service";
 import { ProductsComponent } from "../products/products.component";
-import { Subscription, concatMap, of } from "rxjs";
+import { Subscription, concatMap, finalize, of } from "rxjs";
 
 
 @Component({
@@ -19,7 +19,7 @@ import { Subscription, concatMap, of } from "rxjs";
             <div class="products">
                 <app-products [keyword]="keyword"></app-products>
             </div>
-            <app-user-product-list [(userInput)]="keyword" [list]="list" [id]="selectedId"></app-user-product-list>
+            <app-user-product-list (listChange)="listUpdate($event)" [isEditMode]="true" [(userInput)]="keyword" [list]="list" [id]="selectedId"></app-user-product-list>
         </div>
         `,
     styles: [`
@@ -29,6 +29,7 @@ import { Subscription, concatMap, of } from "rxjs";
             resize: both;
             position: -webkit-sticky;
             position: sticky;
+            z-index: 1000;
             top: 0;
             background-color: white;
             font-size: 25px;
@@ -41,6 +42,7 @@ export class ViewListComponent {
     list: ProductList = {} as ProductList;
     selectedId: string = '0';
     keyword: string = '';
+    listComponent = viewChild<UserProductListComponent>("list");
 
     updateSubscription: Subscription = new Subscription();
 
@@ -58,9 +60,8 @@ export class ViewListComponent {
             next: (data) => {
                 console.log('updated', data);
             },
-            error: () => console.log('nie ma')
+            error: () => console.log('nie ma'),
         })
-        
     }
 
     updateProductsStream() {
@@ -68,7 +69,9 @@ export class ViewListComponent {
             concatMap(product => {
                 const ids = this.list.products.map( p => p.id )
                 if (product && !ids.includes(product.id)) {
-                    return this.productService.updateNewProducts(this.selectedId, [product.id])  
+                    return this.productService.updateNewProducts(this.selectedId, [product.id]).pipe(
+                        finalize(() => this.getList())
+                    ) 
                 }
                 return of(null)
             })
@@ -80,6 +83,7 @@ export class ViewListComponent {
             .subscribe({
                 next: (data) => { 
                     this.list = data;
+                    console.log('list', data);
                 },
                 error: (error) => console.log(error)
             })
@@ -96,6 +100,10 @@ export class ViewListComponent {
                 error: () => console.log('error updating')
             })
         }
+    }
+
+    listUpdate(list: Product[]) {
+        this.list.products = list;
     }
 
     ngOnDestroy() {
