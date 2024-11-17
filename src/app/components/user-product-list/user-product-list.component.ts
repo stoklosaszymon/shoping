@@ -38,7 +38,7 @@ import { FormsModule } from '@angular/forms';
           </div>
         }
         @if ( isMobile ) {
-          <input class="userInput" [value]="userInput" (input)="updateUserInput($event)" placeholder="Type here..."/>
+          <input id="userInput" class="userInput" [value]="userInput" (input)="updateUserInput($event)" placeholder="Type here..."/>
         }
         
       </div>`,
@@ -89,10 +89,10 @@ export class UserProductListComponent implements OnChanges {
   changeHeightOnKeyboardMobile() {
     document.querySelectorAll('input').forEach((input) => {
       input.addEventListener('focus', () => {
-          document.body.classList.add('keyboard-open');
+          document.getElementById("userInput")?.scrollIntoView();
       });
       input.addEventListener('blur', () => {
-          document.body.classList.remove('keyboard-open');
+          document.getElementById("userInput")?.scrollIntoView();
       });
     });
   }
