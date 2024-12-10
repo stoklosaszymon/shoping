@@ -9,23 +9,27 @@
   height: fit-content;
   min-height: 100%;
   font-family: "Waiting for the Sunrise", cursive;
-  font-size: 24px;
+  font-size: 20px;
   letter-spacing: 6px;
   font-weight: bold;
   background-image:
     -moz-linear-gradient(top, transparent, transparent 49px, #e7eff8 0px),
-    -moz-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 39%, transparent
+    -moz-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 30%, transparent
           0%),
-    -moz-radial-gradient(3.9% 46%, circle closest-corner, #cccccc, #cccccc 43.5%, transparent
+    -moz-radial-gradient(3.9% 46%, circle closest-corner, #cccccc, #cccccc 34.5%, transparent
           0%);
   background-image:
     -webkit-linear-gradient(top, transparent, transparent 49px, #e7eff8 0),
-    -webkit-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 35%, transparent
+    -webkit-radial-gradient(4% 50%, circle closest-corner, #f5f5f5, #f5f5f5 30%, transparent
           0%),
     -webkit-radial-gradient(3.9% 46%, circle closest-corner, #cccccc, #cccccc
-          39.5%, transparent 0%);
+          34.5%, transparent 0%);
   -webkit-background-size: 100% 50px;
   background-size: 100% 50px;
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
 .show {

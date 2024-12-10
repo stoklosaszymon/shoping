@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable, Subject } from 'rxjs';
-import { ICategory, INewList, INewListRequest, Product } from '../models/product';
+import { ICategory, INewList, INewListRequest, IProduct, Product } from '../models/product';
 
 @Injectable({
     providedIn: 'root'
@@ -73,5 +73,13 @@ export class ProductService {
 
     updateQuantity(listId: string, productId: number, value: number) {
         return this.apiService.post<any[]>(`list_items/update_quantity/${listId}`, { product_id: productId, value: value })
+    }
+
+    updateProduct(product: IProduct) {
+        return this.apiService.post<any[]>(`products/${product.id}`, { name: product.name, unit: product.unit })
+    }
+
+    getProduct(productId: string) {
+        return this.apiService.get<any[]>(`products/${productId}`)
     }
 }

@@ -29,7 +29,7 @@ import { Subscription, concatMap, finalize, of } from "rxjs";
             resize: both;
             position: -webkit-sticky;
             position: sticky;
-            z-index: 1000;
+            z-index: 1;
             top: 0;
             background-color: white;
             font-size: 25px;

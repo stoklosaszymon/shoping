@@ -46,6 +46,7 @@ import { Router } from '@angular/router';
             top: 0;
             background-color: white;
             font-size: 25px;
+            z-index: 1;
      }
    `]
 })

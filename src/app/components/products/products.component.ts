@@ -1,17 +1,22 @@
-import { Component, HostListener, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu'
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { DeviceDetectorService } from 'ngx-device-detector';
+import { MatBottomSheetModule, MatBottomSheetRef, MatBottomSheet } from '@angular/material/bottom-sheet';
+import { ProductFormComponent } from '../editProductForm/product-form.component';
+import { Subscription, fromEvent } from 'rxjs';
 
 @Component({
   selector: 'app-products',
   standalone: true,
   imports: [MatMenuModule,
-            MatIconModule,
-            FormsModule],
+    MatIconModule,
+    FormsModule,
+    MatBottomSheetModule
+  ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss'
 })
@@ -25,13 +30,15 @@ export class ProductsComponent implements OnChanges {
   private holdTime = 1000;
   @ViewChild('keywordRef') keywordRef: any;
   isDesktop = false;
+  keyboardEvents: Subscription[] = [];
 
   constructor(private productService: ProductService,
-              private deviceService: DeviceDetectorService) {
-      this.isDesktop = deviceService.isDesktop();
+    private deviceService: DeviceDetectorService,
+    private bottomSheet: MatBottomSheet) {
+    this.isDesktop = deviceService.isDesktop();
+
   }
 
-  @HostListener('window:keyup', ['$event'])
   onKeyPressed(event: KeyboardEvent) {
     this.showKeyword();
     if (this.isLetterOrSpace(event) && this.deviceService.isDesktop()) {
@@ -40,12 +47,11 @@ export class ProductsComponent implements OnChanges {
     }
   }
 
-  @HostListener('window:keydown.backspace', ['$event'])
   OnBackspacePressed() {
     if (!this.keyHoldTimeout && this.deviceService.isDesktop()) {
       this.keyword = this.keyword.slice(0, -1);
       if (this.keyword.length == 0) {
-        this.getProduct();
+        this.getProducts();
       }
 
       this.keyHoldTimeout = setTimeout(() => {
@@ -54,7 +60,6 @@ export class ProductsComponent implements OnChanges {
     }
   }
 
-  @HostListener('window:keyup.enter', ['$event'])
   onEnterPressed() {
     if (this.products.length === 1) {
       this.productService.selectProduct(this.products[0]);
@@ -66,7 +71,6 @@ export class ProductsComponent implements OnChanges {
     }
   }
 
-  @HostListener('window:keyup.backspace', ['$event'])
   onBackspaceUp() {
     if (this.keyHoldTimeout) {
       clearTimeout(this.keyHoldTimeout);
@@ -75,7 +79,53 @@ export class ProductsComponent implements OnChanges {
   }
 
   ngOnInit() {
-    this.getProduct();
+    this.getProducts();
+    this.setupKeyboardEvents();
+
+  }
+
+  setupKeyboardEvents() {
+    this.keyboardEvents = [];
+    this.keyboardEvents.push(
+      fromEvent(document, 'keyup').subscribe({
+        next: (event) => {
+          this.onKeyPressed(event as KeyboardEvent)
+        }
+      })
+    )
+
+
+    this.keyboardEvents.push(
+      fromEvent(document, 'keydown').subscribe({
+        next: (event: Event) => {
+          if ((event as KeyboardEvent).code == 'Backspace') {
+            this.OnBackspacePressed()
+          }
+        }
+      })
+    )
+
+
+    this.keyboardEvents.push(
+      fromEvent(document, 'keyup').subscribe({
+        next: (event: Event) => {
+          switch ((event as KeyboardEvent).code) {
+            case 'Enter':
+              this.onEnterPressed()
+              break;
+            case 'Backspace':
+              this.onBackspaceUp()
+              break;
+          }
+        }
+      })
+    )
+  }
+
+  unsubscribeEvents() {
+    for (let sub of this.keyboardEvents) {
+      sub.unsubscribe();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -94,7 +144,7 @@ export class ProductsComponent implements OnChanges {
     this.clearKeyword();
   }
 
-  getProduct(category = '') {
+  getProducts(category = '') {
     this.productService.getProducts(category)
       .subscribe({
         next: (data: Product[]) => { this.products = data },
@@ -105,7 +155,7 @@ export class ProductsComponent implements OnChanges {
 
   clearKeyword() {
     this.keyword = '';
-    this.getProduct();
+    this.getProducts();
   }
 
   createNewProduct() {
@@ -133,13 +183,24 @@ export class ProductsComponent implements OnChanges {
     this.selected = id;
   }
 
-  handleDelete() {
+  onDelete() {
     this.productService.deleteProduct(this.selected).subscribe({
       next: (resp) => {
         this.clearKeyword();
       },
       error: (error) => console.log(error)
     })
+  }
+
+  onEdit() {
+    this.bottomSheet.open(ProductFormComponent, {
+        data: { id: this.selected }
+    });
+    this.bottomSheet._openedBottomSheetRef?.afterDismissed().subscribe(() => {
+      this.setupKeyboardEvents();
+      this.getProducts();
+    });
+    this.unsubscribeEvents();
   }
 
   showKeyword() {
@@ -157,6 +218,10 @@ export class ProductsComponent implements OnChanges {
 
   filterProductsByKeyword() {
     return this.products.filter(product => product.name.toLowerCase().startsWith(this.keyword.toLowerCase()));
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeEvents();
   }
 
 }

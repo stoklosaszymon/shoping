@@ -7,6 +7,12 @@ export interface Product {
     quantity: number
 }
 
+export interface IProduct {
+    id: string 
+    name: string
+    unit: string 
+}
+
 export interface ICategory extends Product {
 }
 

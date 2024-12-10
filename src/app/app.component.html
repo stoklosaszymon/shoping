@@ -20,7 +20,7 @@
           aria-expanded="false">
           Account
         </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <ul class="dropdown-menu" style="position: absolute; z-index: 1000" aria-labelledby="navbarDropdown">
           @if( signedIn ) {
           <li class="nav-item">
             <button class="dropdown-item" (click)="logout()">Logout</button>
